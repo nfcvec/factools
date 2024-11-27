@@ -1,0 +1,23 @@
+#react and python
+node_modules/
+build/
+dist/
+venv/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.env
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+.DS_Store
+uploads/
+error_forma_pago/
+proveedores/
+docentes/
+classified/
