@@ -1,7 +1,0 @@
-{
-    "name": "My Project",
-    "dockerComposeFile": "../docker-compose.yml",
-    "service": "backend",
-    "workspaceFolder": "/workspace",
-    "runServices": ["backend", "frontend"]
-}
