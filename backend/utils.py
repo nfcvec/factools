@@ -113,26 +113,15 @@ def getDataFromFile(archivo, lista_docentes, formas_de_pago, formas_de_impuestos
 
     # Determine the paths where the documents will be saved
     if isDocente:
-        dpath = os.path.join("docentes", string_fecha)
+        dpath = f"docentes/{string_fecha}"
     elif formaPagoAdmitida:
-        dpath = os.path.join("proveedores", razonSocial, f"{estab}{ptoEmi}{secuencial}")
+        dpath = f"{'proveedores' if tipo == 'factura' else 'nota_credito'}/{razonSocial}/{estab}{ptoEmi}{secuencial}"
     else:
-        dpath = os.path.join("error_forma_pago", razonSocial)
+        dpath = f"error_forma_pago/{razonSocial}"
 
-    os.makedirs(dpath, exist_ok=True)
-
-    xml_path = os.path.join(dpath, f"{estab}{ptoEmi}{secuencial}.xml")
-    pdf_path = os.path.join(dpath, f"{estab}{ptoEmi}{secuencial}.pdf")
-
-    try:
-        shutil.copy(archivo, xml_path)
-    except:
-        print(f"[ERROR] Error copiando xml de {archivo}")
-
-    try:
-        shutil.copy(archivo.replace(".xml", ".pdf"), pdf_path)
-    except:
-        print(f"[ERROR] Error copiando pdf de {archivo}")
+    # Calcular las rutas de los archivos
+    xml_path = f"{dpath}/{estab}{ptoEmi}{secuencial}.xml"
+    pdf_path = f"{dpath}/{estab}{ptoEmi}{secuencial}.pdf"
 
     return {
         "fechaEmisionDocSustento": fechaEmisionDocSustento,

@@ -1,23 +1,19 @@
-#react and python
+# Node.js
 node_modules/
-build/
 dist/
+dist-ssr/
+*.local
+
+# Python
 venv/
-*.pyc
-*.pyo
-*.pyd
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 *.log
-*.env
-*.env.local
-*.env.development.local
-*.env.test.local
-*.env.production.local
+
+# General
 .DS_Store
-uploads/
-error_forma_pago/
-proveedores/
-docentes/
-classified/
+.env
+uploads/*
+

@@ -3,6 +3,9 @@ from flask_cors import CORS
 from flask import Flask, request, jsonify,render_template
 import os
 from utils import parse_factura, getDataFromFile
+import chardet
+import json
+
 
 # Create the Flask app
 app = Flask(__name__, static_folder="/frontend/dist/assets", template_folder="frontend/dist")
@@ -11,9 +14,12 @@ app = Flask(__name__, static_folder="/frontend/dist/assets", template_folder="fr
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Define constants for getDataFromFile
-lista_docentes = [
-    '1718425570001'
-]
+with open("docentes.json", "r") as f:
+    docentes = f.read()
+    docentes = json.loads(docentes)
+    
+lista_docentes = docentes
+
 formas_de_pago = [
     {"codigo": "1", "descripcion": "Sin utilizacion del sistema financiero", "admitido": False},
     {"codigo": "15", "descripcion": "Compensacion de deudas", "admitido": False},
@@ -41,9 +47,10 @@ tipos_de_documento = [
 
 # Define the routes
 
+#Serve the built react app
 @app.route("/")
 def hello():
-    return render_template('index.html')
+    return render_template("index.html")
 
 @app.route('/api/parse', methods=['POST'])
 def parse_factura_endpoint():
@@ -51,33 +58,29 @@ def parse_factura_endpoint():
     if xml_file.filename == '':
         return jsonify({'error': 'No se ha proporcionado el archivo XML'}), 400
     
-    #check if filename includes route and remove it
-    if xml_file.filename.find('\\') != -1:
-        xml_file.filename = xml_file.filename.split('\\')[-1]
-    if xml_file.filename.find('/') != -1:
-        xml_file.filename = xml_file.filename.split('/')[-1]
-    xml_path = os.path.join('uploads', xml_file.filename)
-    xml_file.save(xml_path)
-
     try:
         # Try reading the file with the default encoding
-        with open(xml_path, 'r') as file:
-            xml_content = file.read()
+        xml_content = xml_file.read().decode('utf-8')
     except UnicodeDecodeError:
-        import chardet
         # Detect encoding if there's a decoding error
-        with open(xml_path, 'rb') as file:
-            encoding = chardet.detect(file.read())['encoding']
-        # Read file with detected encoding
-        with open(xml_path, 'r', encoding=encoding) as file:
-            xml_content = file.read()
+        xml_file.seek(0)  # Reset file pointer to the beginning
+        encoding = chardet.detect(xml_file.read())['encoding']
+        xml_file.seek(0)  # Reset file pointer to the beginning again
+        xml_content = xml_file.read().decode(encoding)
+
 
     try:
         factura = getDataFromFile(xml_content, lista_docentes, formas_de_pago, formas_de_impuestos, tipos_de_documento)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({
+            'error': str(e),
+            'success': False
+        }), 500
     
-    return jsonify({'factura': factura})
+    return jsonify({
+        'comprobante': factura,
+        'success': True
+        })
 
 
 if __name__ == '__main__':
