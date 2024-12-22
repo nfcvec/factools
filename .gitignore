@@ -5,7 +5,8 @@ dist-ssr/
 *.local
 
 # Python
-venv/
+.venv/
+libs/
 __pycache__/
 *.pyc
 *.pyo

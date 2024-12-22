@@ -1,5 +1,5 @@
 # Usa una imagen base de Node.js
-FROM node:18
+FROM node:20
 
 # Establece el directorio de trabajo
 WORKDIR /app
@@ -12,6 +12,9 @@ RUN npm install
 
 # Construye la aplicación
 RUN npm run build
+
+# Valida la existencia de la carpeta dist
+RUN ls -la dist
 
 # Instala un servidor estático para servir la aplicación
 RUN npm install -g serve

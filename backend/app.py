@@ -8,7 +8,7 @@ import json
 
 
 # Create the Flask app
-app = Flask(__name__, static_folder="/frontend/dist/assets", template_folder="frontend/dist")
+app = Flask(__name__)
 
 # Enable CORS with all options disabled
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -50,7 +50,7 @@ tipos_de_documento = [
 #Serve the built react app
 @app.route("/")
 def hello():
-    return render_template("index.html")
+    return jsonify({"message": "It works!"})
 
 @app.route('/api/parse', methods=['POST'])
 def parse_factura_endpoint():
@@ -82,6 +82,42 @@ def parse_factura_endpoint():
         'success': True
         })
 
+@app.route('/api/parseMultiple', methods=['POST'])
+def parse_multiple_facturas_endpoint():
+    xml_files = request.files.getlist('xml')
+    if len(xml_files) == 0:
+        return jsonify({'error': 'No se han proporcionado archivos XML'}), 400
+    
+    facturas = []
+    errores = []
+    for xml_file in xml_files:
+        try:
+            # Try reading the file with the default encoding
+            xml_content = xml_file.read().decode('utf-8')
+        except UnicodeDecodeError:
+            # Detect encoding if there's a decoding error
+            xml_file.seek(0)
+            encoding = chardet.detect(xml_file.read())['encoding']
+            xml_file.seek(0)
+            xml_content = xml_file.read().decode(encoding)
+            
+        try:
+            factura = getDataFromFile(xml_content, lista_docentes, formas_de_pago, formas_de_impuestos, tipos_de_documento)
+            facturas.append(factura)
+        except Exception as e:
+            errores.append({'error': str(e), 'filename': xml_file.filename})
+            facturas.append(None)
+            
+    return jsonify({
+        'comprobantes': facturas,
+        'errores': errores,
+        'success': True
+    })
+    
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(
+        debug=True,
+        host='0.0.0.0'
+    )

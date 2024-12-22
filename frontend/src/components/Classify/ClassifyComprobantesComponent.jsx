@@ -19,9 +19,10 @@ export const ClassifyComprobantesComponent = ({
 
     const sanitizeFileName = (name) => {
         return name
-            .replace(/[\\/:*?"<>|.]/g, "_")
+            .replace(/[\\/:*?"<>|.]/g, "")
             .trim()
-            .replace(/\s+/g, " "); // Trim and replace multiple spaces
+            .replace(/\s+/g, " ")
+            .toUpperCase(); // Trim and replace multiple spaces
     };
 
     const handleCreateFolder = async () => {
