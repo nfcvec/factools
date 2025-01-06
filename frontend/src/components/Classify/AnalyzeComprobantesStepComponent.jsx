@@ -88,9 +88,11 @@ export const AnalyzeComprobantesStepComponent = ({
             batch.forEach((comprobante) => {
                 formData.append("xml", comprobante.xml);
             });
+
+            const parse_url = process.env.REACT_APP_PARSE_URL;
     
             try {
-                const response = await axios.post("https://factools.lerolero.com.ec/api/parseMultiple", formData, {
+                const response = await axios.post(parse_url, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
