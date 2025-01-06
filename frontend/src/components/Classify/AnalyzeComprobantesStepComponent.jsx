@@ -77,7 +77,7 @@ export const AnalyzeComprobantesStepComponent = ({
         setTotalTasks(comprobantes.length);
         setCurrentTaskLabel("Analizando comprobantes...");
     
-        const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
+        const MAX_SIZE = 1 * 1024 * 1024; // 2 MB
         let currentBatch = [];
         let currentBatchSize = 0;
         let allParsedComprobantes = [];
