@@ -89,7 +89,7 @@ export const AnalyzeComprobantesStepComponent = ({
                 formData.append("xml", comprobante.xml);
             });
 
-            const parse_url = process.env.REACT_APP_PARSE_URL;
+            const parse_url = import.meta.env.VITE_PARSE_URL
     
             try {
                 const response = await axios.post(parse_url, formData, {
